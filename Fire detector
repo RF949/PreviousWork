@@ -64,5 +64,5 @@ if (sensors.getTempCByIndex(0) > 26 && (analogRead(LightSensor)) > 3) { //if the
   digitalWrite (ALARM,LOW);
   delay(1000);
  }
- }
+ } 
 
