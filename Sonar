@@ -1,0 +1,68 @@
+
+//include the libraries
+#include <OneWire.h>  
+#include <DallasTemperature.h>
+
+// Sensor wire is plugged into pin 2 
+#define ONE_WIRE_BUS 2 
+
+// Setup a oneWire instance to communicate with
+OneWire oneWire(ONE_WIRE_BUS); 
+
+// Pass the oneWire reference to the temperature sensor 
+DallasTemperature sensors(&oneWire);
+
+//creating constant variables
+const int LED1 = 8;
+const int ALARM = 9;
+const int LightSensor = A0;
+
+
+void setup(void) 
+{ 
+ // start serial port 
+ Serial.begin(9600); 
+ Serial.println("Dallas Temperature IC Control Library Demo"); 
+ // Start up the library 
+ sensors.begin(); 
+ //selecting Output for the pins
+ pinMode(LED1, OUTPUT);
+ pinMode(ALARM, OUTPUT);
+} 
+void loop(void) 
+{ 
+  int LightSensorVal = analogRead(LightSensor); //making an integar for the analogRead off of A0
+ Serial.print(" Requesting temperatures..."); //printing to the moniter
+ sensors.requestTemperatures(); // Send the command to get temperature readings 
+ Serial.println("DONE"); //printing to the moniter
+
+ Serial.print("Temperature is: "); //printing to the moniter
+ Serial.print(sensors.getTempCByIndex(0)); //choosing which port the sensor is on through the Onewire program
+ Serial.print(" SensorVal: "); //printing to the moniter
+ Serial.println(LightSensorVal); //printing to the moniter
+   // You can have more than one DS18B20 on the port.  
+   // 0 refers to the first IC on the wire 
+   delay(100); 
+
+if (sensors.getTempCByIndex(0) > 26 && (analogRead(LightSensor)) > 3) { //if the temperature =>26 and the light sensor is greater then x then..
+    digitalWrite (LED1,HIGH);
+    digitalWrite (ALARM,HIGH);
+    Serial.print(" ALARM has been activated...");
+    delay(50);
+    digitalWrite (ALARM,LOW);
+    digitalWrite (LED1,LOW);
+    delay(50);
+    digitalWrite (ALARM,HIGH);
+    digitalWrite (LED1,HIGH);
+    delay(50);
+    digitalWrite (ALARM,LOW);
+    digitalWrite (LED1,LOW);
+}
+  
+ if (sensors.getTempCByIndex(0) < 26 && (analogRead(LightSensor)) < 3) { //if the temperature =<26 and the light sensor is less then x then... 
+  digitalWrite (LED1,LOW);
+  digitalWrite (ALARM,LOW);
+  delay(1000);
+ }
+ }
+
